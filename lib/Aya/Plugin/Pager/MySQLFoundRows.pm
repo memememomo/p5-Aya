@@ -35,7 +35,7 @@ sub search_with_pager {
     my $total_entries = $self->dbh->selectrow_array(q{SELECT FOUND_ROWS()});
 
     my $itr = Aya::Iterator->new(
-        karasu           => $self,
+        aya           => $self,
         sth              => $sth,
         sql              => $sql,
     );

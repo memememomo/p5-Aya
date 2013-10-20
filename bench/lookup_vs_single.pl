@@ -7,7 +7,7 @@ use Test::Mock::Guard qw/mock_guard/;
 
 {
     package Bench;
-    use parent 'Karasu';
+    use parent 'Aya';
     __PACKAGE__->load_plugin('Lookup');
 }
 my $gurad = mock_guard('DBI::st' => +{fetchrow_hashref => +{id => 1, name => 'nekokak', age => 33}});

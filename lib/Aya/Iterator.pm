@@ -15,7 +15,7 @@ sub next {
     my $row;
     if ($self->{sth}) {
         $row = $self->{sth}->fetchrow_hashref;
-        $self->{select_columns} ||= $self->{sth}->{$self->{karasu}->{fields_case}};
+        $self->{select_columns} ||= $self->{sth}->{$self->{aya}->{fields_case}};
         unless ( $row ) {
             $self->{sth}->finish;
             $self->{sth} = undef;
@@ -34,7 +34,7 @@ sub all {
     my $result = [];
 
     if ($self->{sth}) {
-        $self->{select_columns} ||= $self->{sth}->{$self->{karasu}->{fields_case}};
+        $self->{select_columns} ||= $self->{sth}->{$self->{aya}->{fields_case}};
         $result = $self->{sth}->fetchall_arrayref(+{});
         $self->{sth}->finish;
         $self->{sth} = undef;

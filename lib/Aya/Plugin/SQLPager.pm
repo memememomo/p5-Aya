@@ -21,7 +21,7 @@ sub search_by_sql_with_pager {
     $sth->execute(@$binds) or Carp::croak $self->dbh->errstr;
 
     my $itr = Aya::Iterator->new(
-        karasu           => $self,
+        aya           => $self,
         sth              => $sth,
         sql              => $sql,
         table_name       => $table_name,

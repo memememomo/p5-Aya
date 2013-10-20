@@ -37,7 +37,7 @@ sub search_with_pager {
     $sth->execute(@binds) or Carp::croak $self->dbh->errstr;
 
     my $ret = [ Aya::Iterator->new(
-        karasu => $self,
+        aya => $self,
         sth    => $sth,
         sql    => $sql,
     )->all];

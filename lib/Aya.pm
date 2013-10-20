@@ -429,7 +429,7 @@ sub search_by_sql {
 
     my $sth = $self->execute($sql, $bind);
     my $itr = Aya::Iterator->new(
-        karasu     => $self,
+        aya     => $self,
         sth        => $sth,
         sql        => $sql,
         table_name => $table_name
@@ -515,17 +515,17 @@ create your db model base class.
 
     use Your::Model;
 
-    my $karasu = Your::Model->new(\%args);
+    my $aya = Your::Model->new(\%args);
     # insert new record.
-    my $id = $karasu->insert('user',
+    my $id = $aya->insert('user',
         {
             id   => 1,
         }
     );
-    $karasu->update('user', {name => 'memememomo'}, {id => $id});
+    $aya->update('user', {name => 'memememomo'}, {id => $id});
 
-    $row = $karasu->single_by_sql(q{SELECT id, name FROM user WHERE id = ?}, [ 1 ]);
-    $karasu->delete('user', {id => $row->{id}});
+    $row = $aya->single_by_sql(q{SELECT id, name FROM user WHERE id = ?}, [ 1 ]);
+    $aya->delete('user', {id => $row->{id}});
 
 =head1 ARCHITECTURE
 
@@ -547,7 +547,7 @@ Aya provides a number of methods to all your classes,
 
 =over
 
-=item $karasu = Aya->new(\%args)
+=item $aya = Aya->new(\%args)
 
 Creates a new Aya instance.
 
@@ -585,17 +585,17 @@ with SQL::Maker.
 
 =back
 
-=item $id = $karasu->insert($table_name, \%row_data)
+=item $id = $aya->insert($table_name, \%row_data)
 
 Inserts a new record. Returns the primary key.
 
-    my $id = $karasu->insert('user',{
+    my $id = $aya->insert('user',{
         id   => 1,
         name => 'uchico',
     });
 
 
-=item $karasu->bulk_insert($table_name, \@rows_data)
+=item $aya->bulk_insert($table_name, \@rows_data)
 
 Accepts either an arrayref of hashrefs.
 each hashref should be a structure suitable
@@ -620,11 +620,11 @@ example:
         },
     ]);
 
-=item $update_row_count = $karasu->update($table_name, \%update_row_data, [\%update_condition])
+=item $update_row_count = $aya->update($table_name, \%update_row_data, [\%update_condition])
 
 Calls UPDATE on C<$table_name>, with values specified in C<%update_ro_data>, and returns the number of rows updated. You may optionally specify C<%update_condition> to create a conditional update query.
 
-    my $update_row_count = $karasu->update('user',
+    my $update_row_count = $aya->update('user',
         {
             name => 'uchico',
         },
@@ -635,17 +635,17 @@ Calls UPDATE on C<$table_name>, with values specified in C<%update_ro_data>, and
     # Executes UPDATE user SET name = 'uchico' WHERE id = 1
 
 
-=item $delete_row_count = $karasu->delete($table, \%delete_condition)
+=item $delete_row_count = $aya->delete($table, \%delete_condition)
 
 Deletes the specified record(s) from C<$table> and returns the number of rows deleted. You may optionally specify C<%delete_condition> to create a conditional delete query.
 
-    my $rows_deleted = $karasu->delete( 'user', {
+    my $rows_deleted = $aya->delete( 'user', {
         id => 1
     } );
     # Executes DELETE FROM user WHERE id = 1
 
 
-=item $itr = $karasu->search($table_name, [\%search_condition, [\%search_attr]])
+=item $itr = $aya->search($table_name, [\%search_condition, [\%search_attr]])
 
 simple search method.
 search method get Aya::Iterator's instance object.
@@ -654,37 +654,37 @@ see L<Aya::Iterator>
 
 get iterator:
 
-    my $itr = $karasu->search('user',{id => 1},{order_by => 'id'});
+    my $itr = $aya->search('user',{id => 1},{order_by => 'id'});
 
 get rows:
 
-    my @rows = $karasu->search('user',{id => 1},{order_by => 'id'});
+    my @rows = $aya->search('user',{id => 1},{order_by => 'id'});
 
-=item $row = $karasu->single($table_name, \%search_condition)
+=item $row = $aya->single($table_name, \%search_condition)
 
 get one record.
 give back one case of the beginning when it is acquired plural records by single method.
 
-    my $row = $karasu->single('user',{id =>1});
+    my $row = $aya->single('user',{id =>1});
 
-=item $itr = $karasu->search_named($sql, [\%bind_values, [$table_name]])
+=item $itr = $aya->search_named($sql, [\%bind_values, [$table_name]])
 
 execute named query
 
-    my $itr = $karasu->search_named(q{SELECT * FROM user WHERE id = :id}, {id => 1});
+    my $itr = $aya->search_named(q{SELECT * FROM user WHERE id = :id}, {id => 1});
 
 If you give ArrayRef to value, that is expanded to "(?,?,?,?)" in SQL.
 It's useful in case use IN statement.
 
     # SELECT * FROM user WHERE id IN (?,?,?);
     # bind [1,2,3]
-    my $itr = $karasu->search_named(q{SELECT * FROM user WHERE id IN :ids}, {ids => [1, 2, 3]});
+    my $itr = $aya->search_named(q{SELECT * FROM user WHERE id IN :ids}, {ids => [1, 2, 3]});
 
-=item $itr = $karasu->search_by_sql($sql, [\@bind_values])
+=item $itr = $aya->search_by_sql($sql, [\@bind_values])
 
 execute your SQL
 
-    my $itr = $karasu->search_by_sql(q{
+    my $itr = $aya->search_by_sql(q{
         SELECT
             id, name
         FROM
@@ -694,43 +694,43 @@ execute your SQL
     },[ 1 ]);
 
 
-=item $row = $karasu->single_by_sql($sql, [\@bind_values, [$table_name]])
+=item $row = $aya->single_by_sql($sql, [\@bind_values, [$table_name]])
 
 get one record from your SQL.
 
-    my $row = $karasu->single_by_sql(q{SELECT id,name FROM user WHERE id = ? LIMIT 1}, [1]);
+    my $row = $aya->single_by_sql(q{SELECT id,name FROM user WHERE id = ? LIMIT 1}, [1]);
 
 This is a shortcut for
 
-    my $row = $karasu->search_by_sql(q{SELECT id,name FROM user WHERE id = ? LIMIT 1}, [1])->next;
+    my $row = $aya->search_by_sql(q{SELECT id,name FROM user WHERE id = ? LIMIT 1}, [1])->next;
 
 But optimized implementation.
 
-=item $row = $karasu->single_named($sql, [\%bind_values])
+=item $row = $aya->single_named($sql, [\%bind_values])
 
 get one record from execute named query
 
-    my $row = $karasu->single_named(q{SELECT id,name FROM user WHERE id = :id LIMIT 1}, {id => 1}, 'user');
+    my $row = $aya->single_named(q{SELECT id,name FROM user WHERE id = :id LIMIT 1}, {id => 1}, 'user');
 
 This is a shortcut for
 
-    my $row = $karasu->search_named(q{SELECT id,name FROM user WHERE id = :id LIMIT 1}, {id => 1})->next;
+    my $row = $aya->search_named(q{SELECT id,name FROM user WHERE id = :id LIMIT 1}, {id => 1})->next;
 
 But optimized implementation.
 
-=item $sth = $karasu->execute($sql, [\@bind_values])
+=item $sth = $aya->execute($sql, [\@bind_values])
 
 execute query and get statement handler.
 and will be inserted caller's file and line as a comment in the SQL if $ENV{KARASU_SQL_COMMENT} or sql_comment is true value.
 
-=item $karasu->txn_scope
+=item $aya->txn_scope
 
 Creates a new transaction scope guard object.
 
     do {
-        my $txn = $karasu->txn_scope;
+        my $txn = $aya->txn_scope;
 
-        $karasu->update('user', {foo => 'bar'});
+        $aya->update('user', {foo => 'bar'});
 
         $txn->commit;
     }
@@ -743,35 +743,35 @@ about calling L</txn_rollback> at the right places. Note that since there
 is no defined code closure, there will be no retries and other magic upon
 database disconnection.
 
-=item $txn_manager = $karasu->txn_manager
+=item $txn_manager = $aya->txn_manager
 
 Get the DBIx::TransactionManager instance.
 
-=item $karasu->txn_begin
+=item $aya->txn_begin
 
 start new transaction.
 
-=item $karasu->txn_commit
+=item $aya->txn_commit
 
 commit transaction.
 
-=item $karasu->txn_rollback
+=item $aya->txn_rollback
 
 rollback transaction.
 
-=item $karasu->txn_end
+=item $aya->txn_end
 
 finish transaction.
 
-=item $karasu->do($sql, [\%option, @bind_values])
+=item $aya->do($sql, [\%option, @bind_values])
 
 Execute the query specified by C<$sql>, using C<%option> and C<@bind_values> as necessary. This pretty much a wrapper around L<http://search.cpan.org/dist/DBI/DBI.pm#do>
 
-=item $karasu->dbh
+=item $aya->dbh
 
 get database handle.
 
-=item $karasu->connect(\@connect_info)
+=item $aya->connect(\@connect_info)
 
 connect database handle.
 
@@ -779,18 +779,18 @@ connect_info is [$dsn, $user, $password, $options].
 
 If you give \@connect_info, create new database connection.
 
-=item $karasu->disconnect()
+=item $aya->disconnect()
 
 Disconnects from the currently connected database.
 
-=item $karasu->load_plugin();
+=item $aya->load_plugin();
 
- $karasu->load_plugin($plugin_class, $options);
+ $aya->load_plugin($plugin_class, $options);
 
-This imports plugin class's methods to C<$karasu> class
+This imports plugin class's methods to C<$aya> class
 and it calls $plugin_class's init method if it has.
 
- $plugin_class->init($karasu, $options);
+ $plugin_class->init($aya, $options);
 
 If you want to change imported method name, use C<alias> option.
 for example:
@@ -799,7 +799,7 @@ for example:
 
 BulkInsert's "bulk_insert" method is imported as "insert_bulk".
 
-=item $karasu->handle_error
+=item $aya->handle_error
 
 handling error method.
 
